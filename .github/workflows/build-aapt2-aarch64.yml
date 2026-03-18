@@ -21,10 +21,10 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/termux/termux-packages.git
 
-      - name: Build aapt2 for aarch64 using termux-packages
+      - name: Build aapt (and aapt2 subpackage) for aarch64 using termux-packages
         run: |
           cd termux-packages
-          ./scripts/run-docker.sh ./build-package.sh -a aarch64 aapt2
+          ./scripts/run-docker.sh ./build-package.sh -a aarch64 aapt
 
       - name: Extract binary from .deb
         run: |
