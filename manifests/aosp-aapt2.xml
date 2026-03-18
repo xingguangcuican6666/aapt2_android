@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Minimal repo manifest for building aapt2 from AOSP official sources.
+
+  Syncs only the projects needed to compile aapt2 and its direct
+  dependencies, avoiding a full AOSP checkout (200 GB or more).
+
+  Tag: android-14.0.0_r1 (Android 14 / API 34, September 2023)
+
+  Usage: see README.md or the workflow in
+  .github/workflows/build-aapt2-aarch64-aosp.yml
+-->
+<manifest>
+  <remote name="aosp"
+          fetch="https://android.googlesource.com/"
+          review="https://android-review.googlesource.com/" />
+
+  <default remote="aosp"
+           revision="refs/tags/android-14.0.0_r1"
+           sync-c="true" />
+
+  <!-- aapt2 source + libandroidfw (used for resource reading) -->
+  <project name="platform/frameworks/base"
+           path="frameworks/base"
+           clone-depth="1" />
+
+  <!-- libbase: string utilities, file helpers, logging macros -->
+  <project name="platform/system/libbase"
+           path="system/libbase"
+           clone-depth="1" />
+
+  <!-- libcutils, libutils, libziparchive -->
+  <project name="platform/system/core"
+           path="system/core"
+           clone-depth="1" />
+
+  <!-- liblog (moved from system/core in Android 11+) -->
+  <project name="platform/system/logging"
+           path="system/logging"
+           clone-depth="1" />
+
+  <!-- Protocol Buffers (aapt2 uses libprotobuf-cpp-full) -->
+  <project name="platform/external/protobuf"
+           path="external/protobuf"
+           clone-depth="1" />
+
+  <!-- PNG image support -->
+  <project name="platform/external/libpng"
+           path="external/libpng"
+           clone-depth="1" />
+
+  <!-- XML parsing (used by libandroidfw for manifest parsing) -->
+  <project name="platform/external/expat"
+           path="external/expat"
+           clone-depth="1" />
+
+  <!-- zlib (NDK also provides this; included for completeness) -->
+  <project name="platform/external/zlib"
+           path="external/zlib"
+           clone-depth="1" />
+</manifest>
