@@ -1,0 +1,56 @@
+name: Build aapt2 for Android aarch64 (Termux)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone termux-packages
+        run: |
+          git clone --depth=1 https://github.com/termux/termux-packages.git
+
+      - name: Build aapt2 for aarch64 using termux-packages
+        run: |
+          cd termux-packages
+          ./scripts/run-docker.sh ./build-package.sh -a aarch64 aapt2
+
+      - name: Extract binary from .deb
+        run: |
+          mkdir -p dist
+          DEB=$(find termux-packages/output -maxdepth 1 -name 'aapt2_*.deb' ! -name '*dbg*' -type f -print -quit)
+          if [ -z "$DEB" ]; then
+            echo "Error: Could not find aapt2 .deb package"
+            ls -la termux-packages/output/ || true
+            exit 1
+          fi
+          echo "Found package: $DEB"
+          dpkg-deb -x "$DEB" dist/
+          BINARY=$(find dist -name "aapt2" -type f -print -quit)
+          if [ -z "$BINARY" ]; then
+            echo "Error: Could not find aapt2 binary in extracted package"
+            find dist -type f
+            exit 1
+          fi
+          cp "$BINARY" ./aapt2-aarch64
+          echo "Binary info:"
+          file ./aapt2-aarch64
+          ls -la ./aapt2-aarch64
+
+      - name: Upload aapt2 binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: aapt2-aarch64-android
+          path: aapt2-aarch64
+          if-no-files-found: error
