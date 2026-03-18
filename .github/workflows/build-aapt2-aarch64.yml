@@ -37,8 +37,9 @@ jobs:
 
       - name: Clone sdk-tools source (includes aapt2 with CMake support)
         run: |
-          git clone --depth=1 --recurse-submodules \
-            https://github.com/Lzhiyong/sdk-tools.git
+          git clone --depth=1 https://github.com/Lzhiyong/sdk-tools.git
+          cd sdk-tools
+          git submodule update --init --recursive --depth=1
 
       - name: Build aapt2 for aarch64 using Android NDK
         env:
